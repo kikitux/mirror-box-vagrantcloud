@@ -1,5 +1,6 @@
 out/
 build/
+mirror/
 .idea/
 .gradle/
 .DS_Store
