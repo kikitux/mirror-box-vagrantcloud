@@ -1,0 +1,35 @@
+language: java
+sudo: required
+services: 
+  - docker
+script:
+  - "./gradlew test"
+  - "./gradlew build"
+  - find . -name 'VagrantCloud-*.jar'  
+before_deploy:
+  - ${TRAVIS_TAG} || git config --local user.name "kikitux"
+  - ${TRAVIS_TAG} || git config --local user.email "kikitux@gmail.com"
+  - ${TRAVIS_TAG} || git tag "snap-$(date +%y%m%d%H%M)"
+deploy:
+  provider: releases
+  prerelease: true
+  api_key:
+    secure: lzFyQQ38vwviDwIRwGJLqeYwYjaCCr/lQuPfrO28bxN0c1nF02/hWLB+i1DH1SnlNpVAx7u0UeSAmG0UT5VevU9xNoDKcXfgBzNY97jaALKfg60JM55B0WRVOcFGgHQfWkLCaAVx6McTSMGNu+Sc+gznqrMLm//RPh3LeFuuJeREZLvuallaNFyTd9mxgJ4PPDmcB250t4Q9yDgF1WD6nUfFXxKHAabk4HPZQG27c+vrhDCh4zGB0jxhPgkXy+IB5Ay2XIqrm7TBqyb/9V2w9sLepM8Wu/elgCxlFREpEsTgoqJVdxvkKAQaD6GPqLtepMIZSgr7GAyVwI4yuPjBj1n31tMcInaQddeX5TJt3gFvWm5BjB2ZJ2iA8Uh1QjCOljWPWxslos11VoRPNSUK1oe7wXORuumS1B4b62pOx28k6pXTFTlDJ5yvZoVFAjUV8cZOgOBdXLRlcbHPNRw3y265ErTO6KWUM8nuW+rmzE3JJv6zPvuuxnP921v3qbSxSpiNpxVPksoi+1CZ9OHWXcqEWsKG/oTT01jxebIKoedFoM3VSr8Ms8+iYkkby7Z9NFpfVx9Qb8bbzjdMRHZGzfWAJV1VxkSQ8w88DsI1s7Wbe4mucVOSpsxWsQb7YFcjg/fXkrJLG3t0+VkRXIlXgaZvR87m6XIcm2QMAvF647A=
+  file_glob: true
+  file: "build/libs/VagrantCloud-*.jar"  
+  skip_cleanup: true
+  on:
+    repo: kikitux/mirror-box-vagrantcloud
+    tags: true
+    branches:
+      only:
+        - master
+after_deploy:
+  - find . -name 'VagrantCloud-*.jar' -exec cp {} docker/ \;
+  - cd docker
+  - ls -alh
+  - export DATE=$(date +%y%m%d%H%M)
+  - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
+  - docker build -t kikitux/mirror-box-vagrantcloud:${DATE} .
+  - docker tag kikitux/mirror-box-vagrantcloud:${DATE} kikitux/mirror-box-vagrantcloud:latest
+  - docker push kikitux/mirror-box-vagrantcloud
