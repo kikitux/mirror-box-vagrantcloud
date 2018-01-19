@@ -40,7 +40,7 @@ compileTestKotlin {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'com.vagrantup.app.MainKt'
+        attributes 'Main-Class': 'com.github.kikitux.mirrorboxvagrantcloud.MainKt'
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }

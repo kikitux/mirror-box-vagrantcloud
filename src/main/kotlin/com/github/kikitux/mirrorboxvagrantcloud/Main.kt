@@ -1,4 +1,4 @@
-package com.vagrantup.app
+package com.github.kikitux.mirrorboxvagrantcloud
 
 import com.hashicorp.checkpoint.getCheckPointData
 import com.hashicorp.releases.getRelease
