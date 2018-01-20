@@ -22,12 +22,16 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://jitpack.io/"
+    }
 }
 
 dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
     compile("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
     compile("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_module")
+    compile("com.github.jkcclemens:khttp:0.1.0")
     testCompile("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
 
@@ -44,3 +48,16 @@ jar {
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
+
+
+ // <repository>
+//<id>jitpack.io</id>
+//    <url></url>
+//</repository>
+//        Add the dependency
+//
+//<dependency>
+//<groupId>com.github.jkcclemens</groupId>
+//    <artifactId>khttp</artifactId>
+//<version>-SNAPSHOT</version>
+//</dependency>

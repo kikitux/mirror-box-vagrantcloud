@@ -1,10 +1,8 @@
 package com.hashicorp.checkpoint.tests
 
-
 import com.hashicorp.checkpoint.getCheckPointData
 import org.junit.Test
 import kotlin.test.assertNotNull
-
 
 class CheckPointTests {
     @Test fun testVagrant(){

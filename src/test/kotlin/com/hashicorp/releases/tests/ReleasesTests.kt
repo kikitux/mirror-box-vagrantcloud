@@ -5,7 +5,6 @@ import com.hashicorp.releases.getRelease
 import org.junit.Test
 import kotlin.test.assertNotNull
 
-
 class ReleasesTests {
     @Test fun testVagrant(){
         val product = "vagrant"
