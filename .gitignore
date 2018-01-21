@@ -4,3 +4,4 @@ mirror/
 .idea/
 .gradle/
 .DS_Store
+run.sh

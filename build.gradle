@@ -30,8 +30,9 @@ repositories {
 dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
     compile("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_module")
-    compile("com.github.jkcclemens:khttp:0.1.0")
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_module")   // json
+    compile("com.github.jkcclemens:khttp:0.1.0")                                    // http client
+    compile("net.sf.jopt-simple:jopt-simple:4.9")                                   // args parser
     testCompile("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
 
@@ -44,20 +45,7 @@ compileTestKotlin {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'com.github.kikitux.mirrorboxvagrantcloud.MainKt'
+        attributes 'Main-Class': 'com.github.kikitux.mirrorboxvagrantcloud.Main'
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
-
-
- // <repository>
-//<id>jitpack.io</id>
-//    <url></url>
-//</repository>
-//        Add the dependency
-//
-//<dependency>
-//<groupId>com.github.jkcclemens</groupId>
-//    <artifactId>khttp</artifactId>
-//<version>-SNAPSHOT</version>
-//</dependency>
