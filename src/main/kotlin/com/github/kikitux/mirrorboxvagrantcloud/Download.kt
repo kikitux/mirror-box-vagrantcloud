@@ -18,13 +18,16 @@ fun getFiles(outDirectory: String, filename: String, url: String){
     File(outDirectory).mkdirs()
 
     if (File(file).exists() && !File(file).isDirectory()) {
-        println("file exists ${file}")
+        println("#file exists ${file}")
     } else {
-        println("file doesn't exists ${file}")
-        println("Downloading " + url)
+        println("#file doesn't exists ${file}")
+        println("#Downloading " + url)
         try {
 
             var r: Response
+
+            // if we got to those valid host, we set header with the token
+            // empty if not defined
 
             if ( URL(url).host == "vagrantcloud.com" || URL(url).host == "app.vagrantup.com"){
 
@@ -34,11 +37,14 @@ fun getFiles(outDirectory: String, filename: String, url: String){
                     headers=mapOf("Authorization" to "Bearer ${VAGRANT_CLOUD_TOKEN}"))
 
             } else {
+
                 r = get(url, stream=true, allowRedirects = true)
+
             }
 
             var redirect = false
 
+            // todo add counter and follow when redirect <3 use while ?
             // normally, 3xx is redirect
             val status = r.statusCode
             if (status != HttpURLConnection.HTTP_OK) {
@@ -56,7 +62,7 @@ fun getFiles(outDirectory: String, filename: String, url: String){
 
                 // open the new connnection again
                 r = get(newUrl, stream=true, allowRedirects = true)
-                println("following redirect to ${URL(newUrl).host}")
+                println("#following redirect to ${URL(newUrl).host}")
 
             }
 
@@ -64,7 +70,7 @@ fun getFiles(outDirectory: String, filename: String, url: String){
             val fos = FileOutputStream(file)
             fos.channel.transferFrom(rbc, 0, java.lang.Long.MAX_VALUE)
         } catch (e: java.io.FileNotFoundException) {
-            println("can't access ${e.message}")
+            println("#can't access ${e.message}")
         }
 
     }

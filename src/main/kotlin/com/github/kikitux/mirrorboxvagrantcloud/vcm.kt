@@ -34,8 +34,6 @@ fun vcm(options: OptionSet) {
             println(options.valuesOf( "u" )[0])
         }
 
-        // todo provider here
-
         val user = options.valuesOf( "u" )[0]
         val apiuserdata = getApiUserData(user.toString())
 
@@ -74,60 +72,66 @@ fun vcm(options: OptionSet) {
                 }
             }
 
-
         } else {
+
+            // tell what provider will search
+            if (options.valuesOf("p").isNotEmpty()){
+                print("#provider defined, will download only " )
+                options.valuesOf("p").onEach { print("${it} ") }
+                println()
+            }
             // boxes list so we use this to download
             val listBoxes = apiuserdata.boxes.filter { it.name in options.valuesOf("b") }
 
             listBoxes.onEach {
 
-                var currentbox = newbox() // so we can create a json to be consumed
+                var mirrorbox = newbox() // so we can create a json of the downloaded box
+                var mirrorboxversion = mirrorbox.versions[0]
                 val box = it.name
 
-                if (it.current_version != null) {
-                    currentbox.description = it.description_html
-                    currentbox.name = it.name
-                    currentbox.short_description = it.short_description
-                    currentbox.versions[0].version = it.current_version.number
-                    currentbox.versions[0].status = it.current_version.status
-                    currentbox.versions[0].description_html = it.current_version.description_html
-                    currentbox.versions[0].description_markdown = it.current_version.description_html
+                if (it.current_version != null) {   // skip boxes that don't have a released version
+
+                    mirrorbox.description = it.description_html
+                    mirrorbox.name = "${user}/${box}"
+                    mirrorbox.short_description = it.short_description
+                    mirrorboxversion.version = it.current_version.number
+                    mirrorboxversion.status = it.current_version.status
+                    mirrorboxversion.description_html = it.current_version.description_html
+                    mirrorboxversion.description_markdown = it.current_version.description_html
 
                     val version = it.current_version.version
                     var providers: List<APIUserBoxProvider>
 
-                    if (options.valuesOf("p").count() < 1) {
-                        println("no provider defined")
-
+                    if (options.valuesOf("p").isEmpty()) {
                         providers = it.current_version.providers
 
                     } else {
-                        println("yay pryvider defined")
                         providers = it.current_version.providers.filter { it.name in options.valuesOf("p") }
                     }
 
-                    var i = 0
+                    val outDir = "mirror/${user}/${box}/${version}"
+
+                    println("#box ${box} is available at mirror/${user}/${box}.json\n")
+
+
+                    var i = 0 // counter we use to add each provider to the mirrorbox data class -> box.json
                     providers.onEach {
-                        val outDir = "mirror/${user}/${box}/${version}"
-                        val file = it.name + ".box"
+
+                        val file = it.name + ".box" // file is provider.box
                         getFiles(outDir, file , it.download_url)
-                        val newprovider = BOXProvider(it.name,outDir + "/" + file) // todo cwd
-                        currentbox.versions[0].providers.add(i,newprovider)
-                        i++
+                        val newprovider = BOXProvider(it.name,outDir + "/" + file) // todo cwd if neeed
 
+                        mirrorbox.versions[0].providers.add(i++,newprovider) // i++ increment after use
+                        println("vagrant box add mirror/${user}/${box}.json --provider ${it.name}\n")
                     }
+
+                    // create a json for the box and providers
+                    val mapper = jacksonObjectMapper()
+                    mapper.writerWithDefaultPrettyPrinter().writeValue( File("mirror/${user}/${box}.json"), mirrorbox)
+
                 }
-
-                // create a json for the box and providers
-                val mapper = jacksonObjectMapper()
-                println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(currentbox))
-
-                mapper.writerWithDefaultPrettyPrinter().writeValue( File("mirror/${user}/${box}.json"), currentbox);
-
             }
-
         }
-
     }
 
 
